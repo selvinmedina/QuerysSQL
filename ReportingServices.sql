@@ -241,3 +241,137 @@ SELECT F.Name AS NombreProvincia,
 SELECT * FROM [Person].[CountryRegion]
 
 --Comentario
+
+--Conteo de empleado por cada departamento
+
+SELECT A.JobTitle AS [Departamento],
+	   ISNULL(D.FirstName,'') + ' ' + ISNULL(D.MiddleName,'') + ' ' + ISNULL(D.LastName,'') AS NombreEmpleado,
+	   C.DepartmentID AS IdDepto
+FROM HumanResources.Employee AS A
+LEFT JOIN HumanResources.EmployeeDepartmentHistory AS B ON A.BusinessEntityID = B.BusinessEntityID	
+LEFT JOIN HumanResources.Department AS C ON  B.DepartmentID = C.DepartmentID
+LEFT JOIN Person.Person AS D ON D.BusinessEntityID = A.BusinessEntityID
+
+SELECT * FROM Production.WorkOrder
+
+SELECT *
+FROM[Production].[WorkOrder] AS A
+LEFT JOIN Production.Product AS B ON B.ProductID = A.ProductID
+
+SELECT TOP 1 A.SalesOrderID AS [IdOrden]
+	   ,B.Name AS [Producto]
+	   ,ISNULL(E.FirstName,'') + ' ' + ISNULL(E.LastName,'') AS  NombreVendedor
+	   ,A.OrderQty AS [Cantidad]
+	   ,D.UnitPrice AS [Precio]
+	   ,C.ShipDate AS [FechaEnvio]
+	   ,C.OrderDate AS [FechaOrden]
+	   ,C.SubTotal AS [SubTotal]
+	   ,C.TotalDue AS [Total]
+FROM [Sales].SalesOrderDetail AS A
+LEFT JOIN Production.Product AS B ON B.ProductID = A.ProductID
+LEFT JOIN Sales.SalesOrderHeader AS C ON C.SalesOrderID = A.SalesOrderID
+LEFT JOIN Sales.SalesOrderDetail AS D ON D.SalesOrderID = C.SalesOrderID
+LEFT JOIN Person.Person AS E ON E.BusinessEntityID = C.SalesPersonID
+LEFT JOIN Sales.Customer AS F ON F.CustomerID = C.CustomerID
+LEFT JOIN Person.Person AS G ON G.BusinessEntityID = F.CustomerID
+LEFT JOIN Sales.SalesTerritory AS H ON C.TerritoryID = H.TerritoryID
+
+
+
+
+
+
+
+SELECT   A.SalesOrderID AS [IdOrden]
+	   ,B.Name AS [Producto]
+	   ,ISNULL(E.FirstName,'') + ' ' + ISNULL(E.LastName,'') AS  NombreVendedor
+	   ,A.OrderQty AS [Cantidad]
+	   ,D.UnitPrice AS [Precio]
+	   ,C.ShipDate AS [FechaEnvio]
+	   ,C.OrderDate AS [FechaOrden]
+	   ,C.SubTotal AS [SubTotal]
+	   ,C.TotalDue AS [Total]
+	   ,H.Name AS [Territorio]
+	   ,G.FirstName + ' ' + G.MiddleName + ' ' + G.LastName AS Cliente
+	   ,J.*
+FROM [Sales].SalesOrderDetail AS A
+LEFT JOIN Production.Product AS B ON B.ProductID = A.ProductID
+LEFT JOIN Sales.SalesOrderHeader AS C ON C.SalesOrderID = A.SalesOrderID
+LEFT JOIN Sales.SalesOrderDetail AS D ON D.SalesOrderID = C.SalesOrderID
+LEFT JOIN Person.Person AS E ON E.BusinessEntityID = C.SalesPersonID
+LEFT JOIN Sales.Customer AS F ON F.CustomerID = C.CustomerID
+LEFT JOIN Person.Person AS G ON G.BusinessEntityID = F.CustomerID
+LEFT JOIN Sales.SalesTerritory AS H ON C.TerritoryID = H.TerritoryID
+LEFT JOIN Person.BusinessEntityAddress AS I ON I.BusinessEntityID = E.BusinessEntityID
+LEFT JOIN Person.Address AS J ON J.AddressID = I.AddressID
+
+
+---------
+SELECT TOP 1*
+FROM [Sales].SalesOrderDetail AS A
+LEFT JOIN Production.Product AS B ON B.ProductID = A.ProductID
+LEFT JOIN Sales.SalesOrderHeader AS C ON C.SalesOrderID = A.SalesOrderID
+LEFT JOIN Sales.SalesOrderDetail AS D ON D.SalesOrderID = C.SalesOrderID
+LEFT JOIN Person.Person AS E ON E.BusinessEntityID = C.SalesPersonID
+LEFT JOIN Sales.Customer AS F ON F.CustomerID = C.CustomerID
+LEFT JOIN Person.Person AS G ON G.BusinessEntityID = F.CustomerID
+LEFT JOIN Sales.SalesTerritory AS H ON C.TerritoryID = H.TerritoryID
+
+
+
+SELECT * FROM Sales.Customer AS A
+INNER JOIN Person.BusinessEntity AS B ON A.PersonID = B.BusinessEntityID
+INNER JOIN Person.Person AS C ON C.BusinessEntityID = B.BusinessEntityID
+--
+
+
+SELECT*
+FROM Sales.SalesOrderHeader AS A
+INNER JOIN [Sales].[SalesOrderDetail] AS B ON A.SalesOrderID = B.SalesOrderID
+LEFT JOIN Production.Product AS C ON C.ProductID = B.ProductID
+
+SELECT * FROM Sales.SalesOrderHeader
+SELECT * FROM Sales.SalesOrderDetail
+SELECT * FROM Sales.SalesTerritory
+SELECT * FROM Sales.Customer
+
+
+--Matriz que me de el conteo de productos por cada categoria
+SELECT A.Name AS [Producto],
+	   ISNULL(D.Name,'N/A') AS [Categoria]
+	   ,A.ProductID AS [IdProducto]
+	   ,ISNULL(B.ProductCategoryID,0) [IdCategoria]
+FROM Production.Product AS A
+LEFT JOIN Production.ProductSubcategory AS B ON B.ProductSubcategoryID = A.ProductSubcategoryID
+LEFT JOIN Production.ProductCategory AS D ON D.ProductCategoryID = B.ProductCategoryID
+
+
+--Matriz que haga el conte o de clientes por tienda, el conteo va a ser de los 10 primeros clientes donde el territorio sea entre los id 1 y 8
+--Donde el conteo de los clientes que pertnecesn a la s tiendas sea mayor a 1
+SELECT * 
+FROM Sales.Store AS A
+INNER JOIN Sales.SalesPerson AS B ON B.BusinessEntityID = A.SalesPersonID
+
+select * from Sales.Customer
+
+SELECT TOP 10 B.Name 
+	  ,COUNT(A.CustomerID) AS [Cantidad]
+FROM Sales.Customer AS A
+LEFT JOIN Sales.Store AS B ON A.StoreID = B.BusinessEntityID
+LEFT JOIN Sales.SalesTerritoryHistory AS C ON C.TerritoryID = A.TerritoryID
+LEFT JOIN Sales.SalesTerritory AS D ON D.TerritoryID = C.TerritoryID
+WHERE D.TerritoryID LIKE'[1-8]'
+GROUP BY B.Name
+HAVING COUNT(A.CustomerID) > 1
+
+
+SELECT TOP 10 B.Name 
+	  ,COUNT(A.CustomerID) AS [Cantidad]
+FROM Sales.Customer AS A
+LEFT JOIN Sales.Store AS B ON A.StoreID = B.BusinessEntityID
+WHERE A.TerritoryID BETWEEN 1 AND 8
+GROUP BY B.Name
+HAVING COUNT(A.CustomerID) > 1
+
+SELECT * FROM Sales.SalesTerritory	WHERE TerritoryID BETWEEN '[1-8]'
+SELECT * FROM Sales.Customer
