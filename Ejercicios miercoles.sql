@@ -92,3 +92,15 @@ LEFT JOIN Sales.Customer AS D ON D.PersonID = A.BusinessEntityID
 WHERE A.PersonType IN('EM','IN','SP')
 
 -- Listado de transacciones agrupado por la categoria del producto
+
+SELECT A.TransactionID AS [IdTransaccion],
+	   B.Name AS [Producto],
+	   A.Quantity AS [Cantidad],
+	   A.TransactionDate [Fecha],
+	   A.ModifiedDate [FechaModifica],
+	   ISNULL(D.Name,'N/A') [Categoria]
+FROM Production.TransactionHistory AS A
+LEFT JOIN Production.Product AS B ON A.ProductID = B.ProductID
+LEFT JOIN Production.ProductSubcategory AS C ON C.ProductSubcategoryID = B.ProductSubcategoryID
+LEFT JOIN Production.ProductCategory AS D ON D.ProductCategoryID = C.ProductCategoryID
+ORDER BY D.Name ASC, B.Name
