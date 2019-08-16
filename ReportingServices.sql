@@ -375,3 +375,30 @@ HAVING COUNT(A.CustomerID) > 1
 
 SELECT * FROM Sales.SalesTerritory	WHERE TerritoryID BETWEEN '[1-8]'
 SELECT * FROM Sales.Customer
+
+
+SELECT A.SalesOrderID AS [IdOrden]
+	   ,B.Name AS [Producto]
+	   ,ISNULL(E.FirstName,'') + ' ' + ISNULL(E.LastName,'') AS  NombreVendedor
+	   ,A.OrderQty AS [Cantidad]
+	   ,D.UnitPrice AS [Precio]
+	   ,C.ShipDate AS [FechaEnvio]
+	   ,C.OrderDate AS [FechaOrden]
+	   ,C.SubTotal AS [SubTotal]
+	   ,C.TotalDue AS [Total]
+	   ,G.FirstName
+FROM [Sales].SalesOrderDetail AS A
+LEFT JOIN Production.Product AS B ON B.ProductID = A.ProductID
+LEFT JOIN Sales.SalesOrderHeader AS C ON C.SalesOrderID = A.SalesOrderID
+LEFT JOIN Sales.SalesOrderDetail AS D ON D.SalesOrderID = C.SalesOrderID
+LEFT JOIN Sales.SalesPerson AS I ON I.BusinessEntityID = C.SalesPersonID
+LEFT JOIN Person.Person AS E ON E.BusinessEntityID = I.BusinessEntityID
+INNER JOIN Sales.Customer AS F ON F.CustomerID = C.CustomerID
+INNER JOIN Person.Person AS G ON G.BusinessEntityID = F.CustomerID
+INNER JOIN Sales.SalesTerritory AS H ON C.TerritoryID = H.TerritoryID
+
+SELECT * FROM Sales.SalesOrderDetail
+SELECT * FROM Sales.SalesPerson
+SELECT * FROM Sales.SalesOrderHeader AS A
+INNER JOIN Sales.Customer AS C ON C.CustomerID = A.CustomerID
+INNER JOIN Person.Person AS B ON B.BusinessEntityID = C.PersonID
